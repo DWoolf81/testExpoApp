@@ -7,35 +7,58 @@ import * as ImapePicker from "expo-image-picker";
 import CircleButton from "./components/CircleButton";
 import IconButton from "./components/IconButton";
 
+import EmojiPicker from "./components/EmojiPicker";
+import EmojiList from "./components/EmojiList";
+import EmojiSticker from "./components/EmojiSticker";
+
 import { useState } from "react";
 
 const PlaceHolderImage = require("./assets/images/background-image.png");
 
 export default function App() {
+  const [pickedEmoji, setPickedEmoji] = useState(null)
+
+  const [isModelVisible, setIsModalVisible] =  useState(false)
+
   const [showAppOptions, setShowAppOptions] = useState(false);
 
   const [selectedImage, setSelectedImage] = useState(null);
 
   const pickImageAsync = async () => {
+
+
     let result = await ImapePicker.launchImageLibraryAsync({
       allowsEditing: true,
       quality: 1,
     });
 
+    console.log(result)
+
+    
+    // if result.canceled == false then it's true
     if (!result.canceled) {
       setSelectedImage(result.assets[0].uri);
       setShowAppOptions(true);
     } else {
-      alert("You did not select an image no");
+      alert("You did not select an image");
     }
   };
 
   const onReset = () => {
     setShowAppOptions(false);
   };
-  const onAddSticker = () => {};
+ 
 
-  const onSaveImageAsync = () => {};
+  const onSaveImageAsync = () => {
+  };
+
+  const onAddSticker = () => {
+    setIsModalVisible(true);
+  };
+
+  const onModalClose = () => {
+    setIsModalVisible(false);
+  };
 
   return (
     <View style={styles.container}>
@@ -44,6 +67,11 @@ export default function App() {
           placeholderImageSource={PlaceHolderImage}
           selectedImage={selectedImage}
         />
+        { pickedEmoji !== 'null' ?
+          <EmojiSticker imageSize={40} stickerSource={pickedEmoji} />
+          :
+          null }
+  
       </View>
       {showAppOptions ? (
         <View style={styles.optionsContainer}>
@@ -70,6 +98,9 @@ export default function App() {
           />
         </View>
       )}
+      <EmojiPicker isVisible={isModelVisible} onClose={onModalClose}>
+          <EmojiList onSelect={setPickedEmoji} onCloseModal={onModalClose} />
+      </EmojiPicker>
       <StatusBar style="auto" />
     </View>
   );
